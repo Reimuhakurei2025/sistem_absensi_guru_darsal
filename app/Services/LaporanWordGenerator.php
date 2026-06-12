@@ -42,13 +42,13 @@ class LaporanWordGenerator
      * Total = 16000 twip ≈ 28.2 cm (cocok A4 landscape margin 1.27cm).
      * Penjumlahan: 600 + 3800 + 2000 + 3000 + 1100 + 1100 + 1100 + 1100 + 1200 = 15000
      */
+    // Kolom widths (tanpa NIP)
     private const COL_NO     = 600;
-    private const COL_NAMA   = 3800;
-    private const COL_NIP    = 2000;
-    private const COL_JABMAP = 3000;
-    private const COL_STATUS = 1100;   // dipakai 4x (hadir/izin/sakit/alpa)
-    private const COL_TOTAL  = 1200;
-    private const TOTAL_COLS = 9;       // jumlah kolom
+    private const COL_NAMA   = 4200;
+    private const COL_JABMAP = 3600;
+    private const COL_STATUS = 1200;   // 4x (hadir/izin/sakit/alpa)
+    private const COL_TOTAL  = 1400;
+    private const TOTAL_COLS = 8;
 
     public function __construct()
     {
@@ -207,7 +207,6 @@ class LaporanWordGenerator
         $table->addRow(400, ['tblHeader' => true]);
         $table->addCell(self::COL_NO,     $headerCellStyle)->addText('No',           $headerFont, $headerParaStyle);
         $table->addCell(self::COL_NAMA,   $headerCellStyle)->addText('Nama Guru',    $headerFont, $headerParaStyle);
-        $table->addCell(self::COL_NIP,    $headerCellStyle)->addText('NIP',          $headerFont, $headerParaStyle);
         $table->addCell(self::COL_JABMAP, $headerCellStyle)->addText('Jabatan / Mapel', $headerFont, $headerParaStyle);
         $table->addCell(self::COL_STATUS, $headerCellStyle)->addText('Hadir',        $headerFont, $headerParaStyle);
         $table->addCell(self::COL_STATUS, $headerCellStyle)->addText('Izin',         $headerFont, $headerParaStyle);
@@ -238,9 +237,6 @@ class LaporanWordGenerator
 
             $table->addCell(self::COL_NAMA)
                   ->addText($row->guru->nama_lengkap, $bodyFont, $leftPara);
-
-            $table->addCell(self::COL_NIP)
-                  ->addText($row->guru->nip ?: '-', $bodyFont, $centerPara);
 
             $table->addCell(self::COL_JABMAP)
                   ->addText($row->guru->jabatan ?: ($row->guru->mata_pelajaran ?? '-'),
@@ -273,10 +269,10 @@ class LaporanWordGenerator
 
         $table->addRow();
 
-        // Merge 4 kolom pertama (No + Nama + NIP + Jabatan/Mapel) jadi 1 cell "TOTAL"
-        $mergeCellStyle = array_merge($totalCellStyle, ['gridSpan' => 4]);
+        // Merge 3 kolom pertama (No + Nama + Jabatan/Mapel) jadi 1 cell "TOTAL"
+        $mergeCellStyle = array_merge($totalCellStyle, ['gridSpan' => 3]);
         $table->addCell(
-            self::COL_NO + self::COL_NAMA + self::COL_NIP + self::COL_JABMAP,
+            self::COL_NO + self::COL_NAMA + self::COL_JABMAP,
             $mergeCellStyle
         )->addText('TOTAL', $totalFont, ['alignment' => Jc::END, 'spaceAfter' => 0]);
 
@@ -328,10 +324,12 @@ class LaporanWordGenerator
             $paraCenter
         );
 
-        $cellSign->addText(
-            'NIP. ' . ($kepsek->nip ?: '-'),
-            ['size' => 9, 'color' => '555555'],
-            $paraCenter
-        );
+        if ($kepsek->nip) {
+            $cellSign->addText(
+                'NIP. ' . $kepsek->nip,
+                ['size' => 9, 'color' => '555555'],
+                $paraCenter
+            );
+        }
     }
 }

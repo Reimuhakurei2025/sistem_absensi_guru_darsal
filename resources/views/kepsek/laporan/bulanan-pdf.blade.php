@@ -233,15 +233,14 @@
     <table class="rekap">
         <thead>
             <tr>
-                <th class="col-no">No</th>
-                <th class="col-nama">Nama Guru</th>
-                <th class="col-nip">NIP</th>
-                <th class="col-jab">Jabatan / Mapel</th>
-                <th class="col-status">Hadir</th>
-                <th class="col-status">Izin</th>
-                <th class="col-status">Sakit</th>
-                <th class="col-status">Alpa</th>
-                <th class="col-total">Total</th>
+                <th style="width: 5%;">No</th>
+                <th style="width: 30%;">Nama Guru</th>
+                <th style="width: 22%;">Jabatan / Mapel</th>
+                <th style="width: 9%;">Hadir</th>
+                <th style="width: 9%;">Izin</th>
+                <th style="width: 9%;">Sakit</th>
+                <th style="width: 9%;">Alpa</th>
+                <th style="width: 10%;">Total</th>
             </tr>
         </thead>
         <tbody>
@@ -249,7 +248,6 @@
                 <tr>
                     <td class="text-center">{{ $i + 1 }}</td>
                     <td>{{ $row->guru->nama_lengkap }}</td>
-                    <td class="text-center">{{ $row->guru->nip ?: '-' }}</td>
                     <td>{{ $row->guru->jabatan ?: ($row->guru->mata_pelajaran ?? '-') }}</td>
                     <td class="text-center bg-status bg-hadir">{{ $row->jumlah_hadir }}</td>
                     <td class="text-center bg-status bg-izin">{{ $row->jumlah_izin }}</td>
@@ -261,7 +259,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="4" class="total-label">TOTAL</td>
+                <td colspan="3" class="total-label">TOTAL</td>
                 <td>{{ $totalHadir }}</td>
                 <td>{{ $totalIzin }}</td>
                 <td>{{ $totalSakit }}</td>
@@ -280,7 +278,9 @@
                 Kepala Sekolah,
                 <div class="sign-space"></div>
                 <div class="sign-name">{{ $kepsek->nama_lengkap }}</div>
-                <div class="sign-nip">NIP. {{ $kepsek->nip ?: '-' }}</div>
+                @if($kepsek->nip)
+                    <div class="sign-nip">NIP. {{ $kepsek->nip }}</div>
+                @endif
             </td>
         </tr>
     </table>

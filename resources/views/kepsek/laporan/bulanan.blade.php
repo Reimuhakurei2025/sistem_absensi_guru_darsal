@@ -104,7 +104,7 @@
                         <tr>
                             <th class="px-4 py-3 text-left">No</th>
                             <th class="px-4 py-3 text-left">Nama Guru</th>
-                            <th class="px-4 py-3 text-left">NIP</th>
+                            <th class="px-4 py-3 text-left hidden md:table-cell">Jabatan / Mapel</th>
                             <th class="px-4 py-3 text-center bg-green-50">Hadir</th>
                             <th class="px-4 py-3 text-center bg-yellow-50">Izin</th>
                             <th class="px-4 py-3 text-center bg-blue-50">Sakit</th>
@@ -118,9 +118,9 @@
                                 <td class="px-4 py-3 text-gray-500">{{ $i + 1 }}</td>
                                 <td class="px-4 py-3">
                                     <div class="font-medium text-gray-800">{{ $row->guru->nama_lengkap }}</div>
-                                    <div class="text-xs text-gray-500">{{ $row->guru->jabatan ?: ($row->guru->mata_pelajaran ?? 'Guru') }}</div>
+                                    <div class="text-xs text-gray-500 md:hidden">{{ $row->guru->jabatan ?: ($row->guru->mata_pelajaran ?? 'Guru') }}</div>
                                 </td>
-                                <td class="px-4 py-3 text-xs text-gray-500 font-mono">{{ $row->guru->nip ?: '-' }}</td>
+                                <td class="px-4 py-3 text-gray-600 hidden md:table-cell">{{ $row->guru->jabatan ?: ($row->guru->mata_pelajaran ?? '-') }}</td>
                                 <td class="px-4 py-3 text-center font-semibold text-green-700">
                                     {{ $row->jumlah_hadir }}
                                 </td>
@@ -163,7 +163,11 @@
                 <p>Kepala Sekolah,</p>
                 <div class="h-20"></div>
                 <p class="font-semibold underline">{{ auth('kepsek')->user()->nama_lengkap }}</p>
-                <p class="text-xs">NIP. {{ auth('kepsek')->user()->nip ?? '-' }}</p>
+                <p class="text-xs">
+                    @if(auth('kepsek')->user()->nip)
+                        NIP. {{ auth('kepsek')->user()->nip }}
+                    @endif
+                </p>
             </div>
         </div>
     @endif

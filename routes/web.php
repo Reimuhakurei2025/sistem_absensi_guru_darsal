@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ProfilController      as AdminProfil;
 use App\Http\Controllers\Guru\DashboardController    as GuruDashboard;
 use App\Http\Controllers\Guru\AbsensiController      as GuruAbsensi;
 use App\Http\Controllers\Shared\AbsensiManualController as AbsensiManual;
+use App\Http\Controllers\Shared\LaporanHarianController as LaporanHarian;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -68,6 +69,10 @@ Route::middleware('role:kepsek')->prefix('kepsek')->name('kepsek.')->group(funct
 
     // Laporan
     Route::prefix('laporan')->name('laporan.')->group(function () {
+        Route::get('/harian',          [LaporanHarian::class, 'index'])->name('harian');
+        Route::get('/harian/pdf',      [LaporanHarian::class, 'exportPdf'])->name('harian.pdf');
+        Route::get('/harian/excel',    [LaporanHarian::class, 'exportExcel'])->name('harian.excel');
+        Route::get('/harian/word',     [LaporanHarian::class, 'exportWord'])->name('harian.word');
         Route::get('/bulanan',         [KepsekLaporan::class, 'bulanan'])->name('bulanan');
         Route::get('/bulanan/pdf',     [KepsekLaporan::class, 'bulananPdf'])->name('bulanan.pdf');
         Route::get('/bulanan/excel',   [KepsekLaporan::class, 'bulananExcel'])->name('bulanan.excel');
@@ -110,6 +115,14 @@ Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function
         Route::post('/bulk',   [AbsensiManual::class, 'storeBulk'])->name('bulk.store');
         Route::get('/riwayat', [AbsensiManual::class, 'riwayatManual'])->name('riwayat');
         Route::post('/check',  [AbsensiManual::class, 'checkExisting'])->name('check');
+    });
+
+    // Laporan Harian (Admin)
+    Route::prefix('laporan')->name('laporan.')->group(function () {
+        Route::get('/harian',          [LaporanHarian::class, 'index'])->name('harian');
+        Route::get('/harian/pdf',      [LaporanHarian::class, 'exportPdf'])->name('harian.pdf');
+        Route::get('/harian/excel',    [LaporanHarian::class, 'exportExcel'])->name('harian.excel');
+        Route::get('/harian/word',     [LaporanHarian::class, 'exportWord'])->name('harian.word');
     });
 
     // Profil Admin

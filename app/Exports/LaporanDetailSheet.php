@@ -53,12 +53,11 @@ class LaporanDetailSheet implements FromCollection, WithHeadings, WithMapping, W
             'B' => 14,   // Tanggal
             'C' => 12,   // Hari
             'D' => 30,   // Nama Guru
-            'E' => 18,   // NIP
-            'F' => 26,   // Jabatan/Mapel
-            'G' => 10,   // Status
-            'H' => 12,   // Jam Masuk
-            'I' => 14,   // Metode
-            'J' => 30,   // Keterangan
+            'E' => 26,   // Jabatan/Mapel
+            'F' => 10,   // Status
+            'G' => 14,   // Jam Masuk
+            'H' => 14,   // Metode
+            'I' => 28,   // Keterangan
         ];
     }
 
@@ -70,7 +69,7 @@ class LaporanDetailSheet implements FromCollection, WithHeadings, WithMapping, W
             ["SMP TERPADU DARUSSALAM"],
             ["DETAIL TRANSAKSI ABSENSI — {$namaBulan} {$this->tahun}"],
             [],
-            ['No', 'Tanggal', 'Hari', 'Nama Guru', 'NIP', 'Jabatan / Mapel',
+            ['No', 'Tanggal', 'Hari', 'Nama Guru', 'Jabatan / Mapel',
              'Status', 'Jam Masuk', 'Metode', 'Keterangan'],
         ];
     }
@@ -83,10 +82,9 @@ class LaporanDetailSheet implements FromCollection, WithHeadings, WithMapping, W
             $absensi->tanggal->format('d-m-Y'),
             $absensi->tanggal->translatedFormat('l'),
             $absensi->guru->nama_lengkap,
-            $absensi->guru->nip ?: '-',
             $absensi->guru->jabatan ?: ($absensi->guru->mata_pelajaran ?? '-'),
             ucfirst($absensi->status),
-            $absensi->jam_masuk ? substr($absensi->jam_masuk, 0, 5) : '-',
+            $absensi->jam_masuk ?: '-',
             $absensi->input_method === 'manual' ? 'Manual' : 'Scan QR',
             $absensi->keterangan ?: '-',
         ];
@@ -99,7 +97,7 @@ class LaporanDetailSheet implements FromCollection, WithHeadings, WithMapping, W
                 $sheet = $event->sheet->getDelegate();
 
                 // ============== KOP ==============
-                $sheet->mergeCells('A1:J1');
+                $sheet->mergeCells('A1:I1');
                 $sheet->getStyle('A1')->applyFromArray([
                     'font' => ['bold' => true, 'size' => 14, 'color' => ['rgb' => 'FFFFFF']],
                     'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '1B5E20']],
@@ -110,7 +108,7 @@ class LaporanDetailSheet implements FromCollection, WithHeadings, WithMapping, W
                 ]);
                 $sheet->getRowDimension(1)->setRowHeight(28);
 
-                $sheet->mergeCells('A2:J2');
+                $sheet->mergeCells('A2:I2');
                 $sheet->getStyle('A2')->applyFromArray([
                     'font' => ['bold' => true, 'size' => 11, 'color' => ['rgb' => 'FFFFFF']],
                     'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '2E7D32']],
@@ -119,7 +117,7 @@ class LaporanDetailSheet implements FromCollection, WithHeadings, WithMapping, W
                 $sheet->getRowDimension(2)->setRowHeight(20);
 
                 // ============== HEADER TABEL (Baris 4) ==============
-                $sheet->getStyle('A4:J4')->applyFromArray([
+                $sheet->getStyle('A4:I4')->applyFromArray([
                     'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF'], 'size' => 10],
                     'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '2E7D32']],
                     'alignment' => [
@@ -138,7 +136,7 @@ class LaporanDetailSheet implements FromCollection, WithHeadings, WithMapping, W
                 // ============== DATA ROWS ==============
                 $lastRow = $sheet->getHighestRow();
                 if ($lastRow >= 5) {
-                    $sheet->getStyle("A5:J{$lastRow}")->applyFromArray([
+                    $sheet->getStyle("A5:I{$lastRow}")->applyFromArray([
                         'borders' => [
                             'allBorders' => [
                                 'borderStyle' => Border::BORDER_THIN,
@@ -154,12 +152,12 @@ class LaporanDetailSheet implements FromCollection, WithHeadings, WithMapping, W
                           ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                     $sheet->getStyle("E5:E{$lastRow}")
                           ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                    $sheet->getStyle("G5:I{$lastRow}")
+                    $sheet->getStyle("F5:H{$lastRow}")
                           ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
                     // Conditional coloring untuk kolom Status (G)
                     for ($r = 5; $r <= $lastRow; $r++) {
-                        $status = strtolower($sheet->getCell("G{$r}")->getValue());
+                        $status = strtolower($sheet->getCell("F{$r}")->getValue());
                         $colorMap = [
                             'hadir' => 'D1FAE5',
                             'izin'  => 'FEF3C7',
@@ -167,7 +165,7 @@ class LaporanDetailSheet implements FromCollection, WithHeadings, WithMapping, W
                             'alpa'  => 'FEE2E2',
                         ];
                         if (isset($colorMap[$status])) {
-                            $sheet->getStyle("G{$r}")->applyFromArray([
+                            $sheet->getStyle("F{$r}")->applyFromArray([
                                 'fill' => [
                                     'fillType'   => Fill::FILL_SOLID,
                                     'startColor' => ['rgb' => $colorMap[$status]],
